@@ -1,4 +1,4 @@
-# dependencies
+# Dependencies...
 from constants import CLAIMANT_END, CLAIMANT_START, TIME_LIMIT
 from fuzzywuzzy import fuzz
 from selenium import webdriver
@@ -7,11 +7,11 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 
-# driver options
+# Driver options...
 options = webdriver.ChromeOptions()
 options.add_argument("--headless")
 
-# gets top result of query, including claimant, claim, rating, and reference
+# Get the top result of a query, including the claimant, claim, rating, and reference.
 def fetch(query, smart=False):
     driver = webdriver.Chrome(options=options)
     driver.get(f"https://toolbox.google.com/factcheck/explorer/search/{prepare(query)};hl=en")
@@ -23,7 +23,7 @@ def fetch(query, smart=False):
             fact_checks, index, max_set_ratio = [], 0, 0
             for i in range(len(cards)):
                 card = cards[i]
-                try: # claimant is sometimes missing
+                try: # Claimant is sometimes missing.
                     claimant = card.find_element_by_xpath(".//div[@title='Claimant']").text[CLAIMANT_START:CLAIMANT_END]
                 except NoSuchElementException:
                     claimant = None
@@ -41,7 +41,7 @@ def fetch(query, smart=False):
             card = WebDriverWait(driver, TIME_LIMIT).until(
                 EC.presence_of_element_located((By.XPATH, ".//div[@class='fc-card-content']"))
             )
-            try: # claimant is sometimes missing
+            try: # Claimant is sometimes missing.
                 claimant = card.find_element_by_xpath(".//div[@title='Claimant']").text[CLAIMANT_START:CLAIMANT_END]
             except NoSuchElementException:
                 claimant = None
@@ -56,7 +56,7 @@ def fetch(query, smart=False):
         driver.quit()
     return None
 
-# gets all results of query, including claimant, claim, rating, and reference for each
+# Get all results of a query, including the claimant, claim, rating, and reference for each.
 def fetchall(query):
     driver = webdriver.Chrome(options=options)
     driver.get(f"https://toolbox.google.com/factcheck/explorer/search/{prepare(query)};hl=en")
@@ -82,10 +82,10 @@ def fetchall(query):
         driver.quit()
     return None
 
-# organizes data in dictionary
+# Organize the data into a dictionary.
 def package(claimant, claim, rating, source, reference):
     return {"claimant": claimant, "claim": claim, "rating": rating, "source": source, "reference": reference}
 
-# query preprocessing
+# Query preprocessing...
 def prepare(query):
     return query.replace(" ", "%20")
